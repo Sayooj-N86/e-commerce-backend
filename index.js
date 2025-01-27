@@ -2,12 +2,15 @@ import cors from "cors";
 import express from "express";
 import env from "./env.js";
 import ConnectDB from "./src/config/db.js";
+import dashboardRoutes from "./src/routes/dashboard/DashboardRoutes.js";
 
 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use("/dashboard/api",dashboardRoutes);
 
 const port = env.PORT;
 
