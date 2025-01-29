@@ -1,27 +1,39 @@
-import mongoose from "mongoose";
-import { data } from "react-router-dom";
-import { categoryModel } from "../../models/CategoryModel.js";
-import { serverError } from "../../utils/ErrorHandler.js";
+import mongoose from 'mongoose';
+import { categoryModel } from '../../models/CategoryModel.js';
+import { serverError } from '../../utils/ErrorHandler.js';
+import { getFilePath } from '../../utils/filePath.js';
+import path from 'path';
 
 export const createCategory = async(req,res,next) => {
     try{
         const { categoryname } = req.body;
+
+        let image;
+
+		req.files.forEach((file) => {
+			if (file.fieldname == 'image') {
+				image =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
+			}
+		});
+
+        // const image = getFilePath(req.file);
         
         if(!categoryname){
-            return res.status(422).json({ message: "category name is required" });
+            return res.status(422).json({ message: 'category name is required' });
         }
 
         const existingData =await categoryModel.findOne({name:categoryname});
         
         if(existingData){
-            return res.status(422).json({message:"Category already exists"});
+            return res.status(422).json({message:'Category already exists'});
         }
 
 
         await categoryModel.create({
             name: categoryname,
+            image: image,
         });
-        return res.status(200).json({ message: "category created"});
+        return res.status(200).json({ message: 'category created'});
     }
     catch (err){
         console.log(err);
@@ -41,17 +53,18 @@ export const getAllCategory = async (req,res,next) => {
                 $project: {
                     name: 1,
                     _id: 1,
+                    image: 1,
                 }
             }
         ]);
 
         if(!categories){
-            return res.status(422).json({ message: "No categories found"});
+            return res.status(422).json({ message: 'No categories found'});
         }
 
         return res.status(200).json(
             {
-                message: "fetched categories",
+                message: 'fetched categories',
                 data: categories,
             }
         );
@@ -87,4 +100,73 @@ export const getCategoryById = async(req,res,next) => {
         console.log(err);
         next(serverError());
         }
+};
+
+export const updateCategory = async (req, res, next) => {
+
+	try {
+
+		const categoryId = req.params.id;
+
+		const { categoryname } = req.body;
+
+		if (!categoryname) {
+			return res.status(422).json({ message: 'Category name is required' });
+		}
+
+        let {image} = req.body.image;
+        if (req.file) {
+            image = getFilePath(req.file);
+            }
+
+        const existingData = await categoryModel.findOne({ name: categoryname, _id: {$ne: categoryId}, });
+
+		if (existingData) {
+			return res.status(422).json({ message: 'Category name already exist' });
+		}
+
+		const category = await categoryModel.findOne({
+			_id: categoryId,
+			deletedAt: null,
+		});
+
+		category.name = categoryname;
+        category.image = image;
+
+		await category.save();
+
+		return res.status(200).json({
+			message: 'Updated Successfully',
+		});
+    
+	} catch (err) {
+		console.log(err);
+		next(serverError());
+	}
+};
+
+export const deleteCategory = async (req, res, next) => {
+
+	try {
+
+		const categoryId = req.params.id;
+
+		//await CategoryModel.deleteOne({_id:categoryId})
+
+		const category = await categoryModel.findOne({
+			_id: categoryId,
+		});
+
+		category.deletedAt = new Date();
+
+		await category.save();
+
+		return res.status(200).json({
+			message: 'Deleted Successfully',
+		});
+    
+	} catch (err) {
+		console.log(err);
+		next(serverError());
+	}
 };
