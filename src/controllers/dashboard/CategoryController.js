@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { categoryModel } from '../../models/CategoryModel.js';
 import { serverError } from '../../utils/ErrorHandler.js';
-import { getFilePath } from '../../utils/filePath.js';
 import path from 'path';
 
 export const createCategory = async(req,res,next) => {
@@ -114,9 +113,13 @@ export const updateCategory = async (req, res, next) => {
 			return res.status(422).json({ message: 'Category name is required' });
 		}
 
-        let {image} = req.body.image;
-        if (req.file) {
-            image = getFilePath(req.file);
+        let {image} = req.body;
+        if (req.files) {
+            req.files.forEach((file) => {
+                if (file.fieldname == 'image') {
+                    image =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
+                }
+            });
             }
 
         const existingData = await categoryModel.findOne({ name: categoryname, _id: {$ne: categoryId}, });

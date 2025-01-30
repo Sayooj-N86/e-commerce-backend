@@ -1,27 +1,39 @@
 import mongoose from 'mongoose';
 import { serverError } from '../../utils/ErrorHandler.js';
-import { productModel } from '../../models/Productodel.js';
+import { productModel } from '../../models/ProductModel.js';
+import path from 'path';
+
 
 
 export const createProduct = async(req,res,next) => {
     try{
-        const { productname } = req.body;
+        const { productname ,productdescription,productprize } = req.body;
         
+        let productimage;
+                
+                        req.files?.forEach((file) => {
+                            if (file.fieldname == 'image') {
+                                productimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
+                            }
+                        });
         if(!productname){
-            return res.status(422).json({ message: 'category name is required' });
+            return res.status(422).json({ message: 'product name is required' });
         }
 
         const existingData =await productModel.findOne({name:productname});
         
         if(existingData){
-            return res.status(422).json({message:'Category already exists'});
+            return res.status(422).json({message:'product already exists'});
         }
 
 
         await productModel.create({
             name: productname,
+            price: productprize,
+            description: productdescription,
+            image: productimage,
         });
-        return res.status(200).json({ message: 'category created'});
+        return res.status(200).json({ message: 'product created'});
     }
     catch (err){
         console.log(err);
@@ -41,17 +53,20 @@ export const getAllProduct = async (req,res,next) => {
                 $project: {
                     name: 1,
                     _id: 1,
+                    price: 1,
+                    description: 1,
+                    image: 1,
                 }
             }
         ]);
 
         if(!product){
-            return res.status(422).json({ message: 'No categories found'});
+            return res.status(422).json({ message: 'No products found'});
         }
 
         return res.status(200).json(
             {
-                message: 'fetched categories',
+                message: 'fetched products',
                 data: product,
             }
         );
@@ -79,7 +94,7 @@ export const getProductById = async(req,res,next) => {
                 }
         ])).at(0);
         return res.status(200).json({ 
-            message: 'fetched category',
+            message: 'fetched product',
             data: product,
         });
     }
@@ -97,14 +112,23 @@ export const updateProduct = async (req, res, next) => {
 
         const { productname } = req.body;
 
+        let productimage = req.body.image;
+                if (req.files) {
+                    req.files.forEach((file) => {
+                        if (file.fieldname == 'image') {
+                          productimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
+                        }
+                    });
+                    }
+
         if (!productname) {
-            return res.status(422).json({ message: 'Category name is required' });
+            return res.status(422).json({ message: 'product name is required' });
         }
 
         const existingData = await productModel.findOne({ name: productname, _id: {$ne: productId}, });
 
         if (existingData) {
-            return res.status(422).json({ message: 'Category name already exist' });
+            return res.status(422).json({ message: 'product name already exist' });
         }
 
         const product = await productModel.findOne({
@@ -113,6 +137,7 @@ export const updateProduct = async (req, res, next) => {
         });
 
         product.name = productname;
+        product.image = productimage;
 
         await product.save();
 

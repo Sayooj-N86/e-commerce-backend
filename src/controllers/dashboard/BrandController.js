@@ -1,26 +1,37 @@
 import mongoose from 'mongoose';
 import { brandModel } from '../../models/BrandModel.js';
 import { serverError } from '../../utils/ErrorHandler.js';
+import path from 'path';
+
 
 export const createBrand = async(req,res,next) => {
     try{
         const { brandname } = req.body;
         
+        let brandimage;
+        
+                req.files.forEach((file) => {
+                    if (file.fieldname == 'image') {
+                        brandimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
+                    }
+                });
+
         if(!brandname){
-            return res.status(422).json({ message: 'category name is required' });
+            return res.status(422).json({ message: 'brand name is required' });
         }
 
         const existingData =await brandModel.findOne({name:brandname});
         
         if(existingData){
-            return res.status(422).json({message:'Category already exists'});
+            return res.status(422).json({message:'brand already exists'});
         }
 
 
         await brandModel.create({
             name: brandname,
+            image:brandimage
         });
-        return res.status(200).json({ message: 'category created'});
+        return res.status(200).json({ message: 'brand created'});
     }
     catch (err){
         console.log(err);
@@ -40,17 +51,18 @@ export const getAllBrand = async (req,res,next) => {
                 $project: {
                     name: 1,
                     _id: 1,
+                    image: 1,
                 }
             }
         ]);
 
         if(!brand){
-            return res.status(422).json({ message: 'No categories found'});
+            return res.status(422).json({ message: 'No brands found'});
         }
 
         return res.status(200).json(
             {
-                message: 'fetched categories',
+                message: 'fetched brands',
                 data: brand,
             }
         );
@@ -78,7 +90,7 @@ export const getBrandById = async(req,res,next) => {
                 }
         ])).at(0);
         return res.status(200).json({ 
-            message: 'fetched category',
+            message: 'fetched brand',
             data: brand,
         });
     }
@@ -96,14 +108,24 @@ export const updateBrand = async (req, res, next) => {
 
         const { brandname } = req.body;
 
+        let brandimage = req.body.image;
+                if (req.files) {
+                    req.files.forEach((file) => {
+                        if (file.fieldname == 'image') {
+                            brandimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
+                        }
+                    });
+    
+                    }
+
         if (!brandname) {
-            return res.status(422).json({ message: 'Category name is required' });
+            return res.status(422).json({ message: 'brand name is required' });
         }
 
         const existingData = await brandModel.findOne({ name: brandname, _id: {$ne: brandId}, });
 
         if (existingData) {
-            return res.status(422).json({ message: 'Category name already exist' });
+            return res.status(422).json({ message: 'brand name already exist' });
         }
 
         const brand = await brandModel.findOne({
@@ -112,6 +134,7 @@ export const updateBrand = async (req, res, next) => {
         });
 
         brand.name = brandname;
+        brand.image= brandimage;
 
         await brand.save();
 
