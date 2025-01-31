@@ -14,23 +14,23 @@ app.use('/dashboard/api', dashboardRoutes);
 
 const port = env.PORT;
 
-app.get('/:num1/:num2', (req, res) => {
-	const { num1, num2 } = req.params;
-	const result = Number(num1) + Number(num2);
-	res.json(`${result}`);
-});
+// app.get('/:num1/:num2', (req, res) => {
+// 	const { num1, num2 } = req.params;
+// 	const result = Number(num1) + Number(num2);
+// 	res.json(`${result}`);
+// });
 
-app.get('/', (req, res) => {
-	const { num1, num2 } = req.query;
-	const result = Number(num1) + Number(num2);
-	res.json(`${result}`);
-});
+// app.get('/', (req, res) => {
+// 	const { num1, num2 } = req.query;
+// 	const result = Number(num1) + Number(num2);
+// 	res.json(`${result}`);
+// });
 
-app.post('/', (req, res) => {
-	const { a, b } = req.body;
-	const result = a + b;
-	res.send(`${result}`);
-});
+// app.post('/', (req, res) => {
+// 	const { a, b } = req.body;
+// 	const result = a + b;
+// 	res.send(`${result}`);
+// });
 
 ConnectDB();
 app.listen(port, () => {

@@ -1,27 +1,27 @@
 import mongoose from 'mongoose';
+import path from 'path';
 import { categoryModel } from '../../models/CategoryModel.js';
 import { serverError } from '../../utils/ErrorHandler.js';
-import path from 'path';
 
 export const createCategory = async(req,res,next) => {
     try{
-        const { categoryname } = req.body;
+        const { category } = req.body;
 
         let image;
 
 		req.files.forEach((file) => {
-			if (file.fieldname == 'image') {
+			if (file.fieldname == 'imageFile') {
 				image =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
 			}
 		});
 
         // const image = getFilePath(req.file);
         
-        if(!categoryname){
+        if(!category){
             return res.status(422).json({ message: 'category name is required' });
         }
 
-        const existingData =await categoryModel.findOne({name:categoryname});
+        const existingData =await categoryModel.findOne({name:category});
         
         if(existingData){
             return res.status(422).json({message:'Category already exists'});
@@ -29,10 +29,10 @@ export const createCategory = async(req,res,next) => {
 
 
         await categoryModel.create({
-            name: categoryname,
+            name: category,
             image: image,
         });
-        return res.status(200).json({ message: 'category created'});
+        return res.status(200).json({ message: 'category created',success:true});
     }
     catch (err){
         console.log(err);
@@ -107,9 +107,9 @@ export const updateCategory = async (req, res, next) => {
 
 		const categoryId = req.params.id;
 
-		const { categoryname } = req.body;
+		const { category } = req.body;
 
-		if (!categoryname) {
+		if (!category) {
 			return res.status(422).json({ message: 'Category name is required' });
 		}
 
@@ -122,19 +122,19 @@ export const updateCategory = async (req, res, next) => {
             });
             }
 
-        const existingData = await categoryModel.findOne({ name: categoryname, _id: {$ne: categoryId}, });
+        const existingData = await categoryModel.findOne({ name: category, _id: {$ne: categoryId}, });
 
 		if (existingData) {
 			return res.status(422).json({ message: 'Category name already exist' });
 		}
 
-		const category = await categoryModel.findOne({
+		const categories = await categoryModel.findOne({
 			_id: categoryId,
 			deletedAt: null,
 		});
 
-		category.name = categoryname;
-        category.image = image;
+		categories.name = category;
+        categories.image = image;
 
 		await category.save();
 

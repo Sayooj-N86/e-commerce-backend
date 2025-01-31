@@ -7,7 +7,7 @@ import path from 'path';
 
 export const createProduct = async(req,res,next) => {
     try{
-        const { productname ,productdescription,productprize } = req.body;
+        const { productname ,productdescription ,productprize ,category ,brand } = req.body;
         
         let productimage;
                 
@@ -32,6 +32,8 @@ export const createProduct = async(req,res,next) => {
             price: productprize,
             description: productdescription,
             image: productimage,
+            category: category,
+            brand: brand
         });
         return res.status(200).json({ message: 'product created'});
     }
@@ -56,6 +58,8 @@ export const getAllProduct = async (req,res,next) => {
                     price: 1,
                     description: 1,
                     image: 1,
+                    category: 1,
+                    brand: 1
                 }
             }
         ]);

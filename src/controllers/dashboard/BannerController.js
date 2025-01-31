@@ -6,7 +6,7 @@ import path from 'path';
 
 export const createBanner = async (req, res, next) => {
 	try {
-		const { bannername } = req.body;
+		const { bannername, categoryname } = req.body;
         let bannerimage;
                 
             req.files.forEach((file) => {
@@ -27,6 +27,7 @@ export const createBanner = async (req, res, next) => {
 
 		await bannerModel.create({
 			name: bannername,
+			category: categoryname,
             image: bannerimage
 		});
 		return res.status(200).json({ message: 'banner created' });
@@ -48,6 +49,7 @@ export const getAllBanner = async (req, res, next) => {
 				$project: {
 					name: 1,
 					_id: 1,
+					category: 1,
                     image: 1,
 				},
 			},
@@ -81,6 +83,7 @@ export const getBannerById = async (req, res, next) => {
 					$project: {
 						name: 1,
 						_id: 1,
+						category: 1,
 					},
 				},
 			])

@@ -4,13 +4,14 @@ meta {
   seq: 2
 }
 
-post {
-  url: http://localhost:5000/dashboard/api/categories/create
+get {
+  url: http://localhost:5000/dashboard/api/products/get-all
   body: multipartForm
   auth: none
 }
 
 body:multipart-form {
-  categoryname: sayooj
-  image: @file(C:\Users\VICTUS\Downloads\women4.jpg)
+  productname: nike
+  productdescription: nike jordan
+  productprize: 129
 }
