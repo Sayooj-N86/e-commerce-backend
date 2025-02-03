@@ -20,7 +20,7 @@ export const createBrand = async(req,res,next) => {
             return res.status(422).json({ message: 'brand name is required' });
         }
 
-        const existingData =await brandModel.findOne({name:brand});
+        const existingData =await brandModel.findOne({name:brand,deleteAt:null});
         
         if(existingData){
             return res.status(422).json({message:'brand already exists'});
@@ -64,7 +64,7 @@ export const getAllBrand = async (req,res,next) => {
             {
                 message: 'fetched brands',
                 data: brands,
-                success:true
+           
             }
         );
     }
@@ -87,6 +87,7 @@ export const getBrandById = async(req,res,next) => {
                 $project: {
                     name: 1,
                     _id: 1,
+                    image: 1,
                     }
                 }
         ])).at(0);
@@ -109,10 +110,10 @@ export const updateBrand = async (req, res, next) => {
 
         const { brand } = req.body;
 
-        let brandimage = req.body.image;
+        let brandimage = req.body.imageFile;
                 if (req.files) {
                     req.files.forEach((file) => {
-                        if (file.fieldname == 'image') {
+                        if (file.fieldname == 'imageFile') {
                             brandimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
                         }
                     });
@@ -141,6 +142,7 @@ export const updateBrand = async (req, res, next) => {
 
         return res.status(200).json({
             message: 'Updated Successfully',
+            success:true
         });
     
     } catch (err) {
@@ -167,6 +169,7 @@ export const deleteBrand = async (req, res, next) => {
 
         return res.status(200).json({
             message: 'Deleted Successfully',
+            success:true
         });
     
     } catch (err) {

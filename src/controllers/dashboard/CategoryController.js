@@ -28,7 +28,7 @@ export const createCategory = async(req,res,next) => {
         }
 
 
-        await categoryModel.create({
+        await categoryModel.create({    
             name: category,
             image: image,
         });
