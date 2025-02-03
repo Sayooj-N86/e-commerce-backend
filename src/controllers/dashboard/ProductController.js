@@ -48,7 +48,7 @@ export const getAllProduct = async (req,res,next) => {
         const product = await productModel.aggregate([
             {
                 $match: {
-                    deletedAt: null,
+                    deleteAt: null,
                 },
             },
             {
@@ -87,7 +87,7 @@ export const getProductById = async(req,res,next) => {
             {
                 $match: {
                     _id: new mongoose.Types.ObjectId(productId),
-                    deletedAt: null,
+                    deleteAt: null,
                     },
                 },{
 
@@ -137,7 +137,7 @@ export const updateProduct = async (req, res, next) => {
 
         const product = await productModel.findOne({
             _id: productId,
-            deletedAt: null,
+            deleteAt: null,
         });
 
         product.name = productname;
@@ -167,7 +167,7 @@ export const deleteProduct = async (req, res, next) => {
             _id: productId,
         });
 
-        product.deletedAt = new Date();
+        product.deleteAt = new Date();
 
         await product.save();
 

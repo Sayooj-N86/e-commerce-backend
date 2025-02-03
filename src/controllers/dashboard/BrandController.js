@@ -6,21 +6,21 @@ import path from 'path';
 
 export const createBrand = async(req,res,next) => {
     try{
-        const { brandname } = req.body;
+        const { brand } = req.body;
         
         let brandimage;
         
                 req.files.forEach((file) => {
-                    if (file.fieldname == 'image') {
+                    if (file.fieldname == 'imageFile') {
                         brandimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
                     }
                 });
 
-        if(!brandname){
+        if(!brand){
             return res.status(422).json({ message: 'brand name is required' });
         }
 
-        const existingData =await brandModel.findOne({name:brandname});
+        const existingData =await brandModel.findOne({name:brand});
         
         if(existingData){
             return res.status(422).json({message:'brand already exists'});
@@ -28,10 +28,10 @@ export const createBrand = async(req,res,next) => {
 
 
         await brandModel.create({
-            name: brandname,
+            name: brand,
             image:brandimage
         });
-        return res.status(200).json({ message: 'brand created'});
+        return res.status(200).json({ message: 'brand created',success:true});
     }
     catch (err){
         console.log(err);
@@ -41,10 +41,10 @@ export const createBrand = async(req,res,next) => {
 
 export const getAllBrand = async (req,res,next) => {
     try{
-        const brand = await brandModel.aggregate([
+        const brands = await brandModel.aggregate([
             {
                 $match: {
-                    deletedAt: null,
+                    deleteAt: null,
                 },
             },
             {
@@ -56,14 +56,15 @@ export const getAllBrand = async (req,res,next) => {
             }
         ]);
 
-        if(!brand){
+        if(!brands){
             return res.status(422).json({ message: 'No brands found'});
         }
 
         return res.status(200).json(
             {
                 message: 'fetched brands',
-                data: brand,
+                data: brands,
+                success:true
             }
         );
     }
@@ -79,7 +80,7 @@ export const getBrandById = async(req,res,next) => {
             {
                 $match: {
                     _id: new mongoose.Types.ObjectId(brandId),
-                    deletedAt: null,
+                    deleteAt: null,
                     },
                 },{
 
@@ -106,7 +107,7 @@ export const updateBrand = async (req, res, next) => {
 
         const brandId = req.params.id;
 
-        const { brandname } = req.body;
+        const { brand } = req.body;
 
         let brandimage = req.body.image;
                 if (req.files) {
@@ -118,25 +119,25 @@ export const updateBrand = async (req, res, next) => {
     
                     }
 
-        if (!brandname) {
+        if (!brand) {
             return res.status(422).json({ message: 'brand name is required' });
         }
 
-        const existingData = await brandModel.findOne({ name: brandname, _id: {$ne: brandId}, });
+        const existingData = await brandModel.findOne({ name: brand, _id: {$ne: brandId}, });
 
         if (existingData) {
             return res.status(422).json({ message: 'brand name already exist' });
         }
 
-        const brand = await brandModel.findOne({
+        const brands = await brandModel.findOne({
             _id: brandId,
-            deletedAt: null,
+            deleteAt: null,
         });
 
-        brand.name = brandname;
-        brand.image= brandimage;
+        brands.name = brand;
+        brands.image= brandimage;
 
-        await brand.save();
+        await brands.save();
 
         return res.status(200).json({
             message: 'Updated Successfully',
@@ -160,7 +161,7 @@ export const deleteBrand = async (req, res, next) => {
             _id: brandId,
         });
 
-        brand.deletedAt = new Date();
+        brand.deleteAt = new Date();
 
         await brand.save();
 

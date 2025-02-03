@@ -42,7 +42,7 @@ export const getAllBanner = async (req, res, next) => {
 		const banners = await bannerModel.aggregate([
 			{
 				$match: {
-					deletedAt: null,
+					deleteAt: null,
 				},
 			},
 			{
@@ -76,7 +76,7 @@ export const getBannerById = async (req, res, next) => {
 				{
 					$match: {
 						_id: new mongoose.Types.ObjectId(bannerId),
-						deletedAt: null,
+						deleteAt: null,
 					},
 				},
 				{
@@ -126,7 +126,7 @@ export const updateBanner = async (req, res, next) => {
 
 		const banner = await bannerModel.findOne({
 			_id: bannerId,
-			deletedAt: null,
+			deleteAt: null,
 		});
 
 		banner.name = bannername;
@@ -153,7 +153,7 @@ export const deleteBanner = async (req, res, next) => {
 			_id: bannerId,
 		});
 
-		banner.deletedAt = new Date();
+		banner.deleteAt = new Date();
 
 		await banner.save();
 

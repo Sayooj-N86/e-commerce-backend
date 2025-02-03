@@ -21,7 +21,7 @@ export const createCategory = async(req,res,next) => {
             return res.status(422).json({ message: 'category name is required' });
         }
 
-        const existingData =await categoryModel.findOne({name:category});
+        const existingData =await categoryModel.findOne({name:category,deleteAt:null});
         
         if(existingData){
             return res.status(422).json({message:'Category already exists'});
@@ -45,7 +45,7 @@ export const getAllCategory = async (req,res,next) => {
         const categories = await categoryModel.aggregate([
             {
                 $match: {
-                    deletedAt: null,
+                    deleteAt: null,
                 },
             },
             {
@@ -80,13 +80,14 @@ export const getCategoryById = async(req,res,next) => {
             {
                 $match: {
                     _id: new mongoose.Types.ObjectId(categoryId),
-                    deletedAt: null,
+                    deleteAt: null,
                     },
                 },{
 
                 $project: {
                     name: 1,
                     _id: 1,
+                    image:1
                     }
                 }
         ])).at(0);
@@ -113,10 +114,10 @@ export const updateCategory = async (req, res, next) => {
 			return res.status(422).json({ message: 'Category name is required' });
 		}
 
-        let {image} = req.body;
+        let image = req.body.imageFile;
         if (req.files) {
             req.files.forEach((file) => {
-                if (file.fieldname == 'image') {
+                if (file.fieldname == 'imageFile') {
                     image =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
                 }
             });
@@ -136,10 +137,11 @@ export const updateCategory = async (req, res, next) => {
 		categories.name = category;
         categories.image = image;
 
-		await category.save();
+		await categories.save();
 
 		return res.status(200).json({
 			message: 'Updated Successfully',
+            success:true
 		});
     
 	} catch (err) {
@@ -160,12 +162,13 @@ export const deleteCategory = async (req, res, next) => {
 			_id: categoryId,
 		});
 
-		category.deletedAt = new Date();
+		category.deleteAt = new Date();
 
 		await category.save();
 
 		return res.status(200).json({
 			message: 'Deleted Successfully',
+            success:true
 		});
     
 	} catch (err) {
