@@ -2,35 +2,36 @@ import mongoose from 'mongoose';
 import { bannerModel } from '../../models/BannerModel.js';
 import { serverError } from '../../utils/ErrorHandler.js';
 import path from 'path';
+import { categoryModel } from '../../models/CategoryModel.js';
 
 
 export const createBanner = async (req, res, next) => {
 	try {
-		const { bannername, categoryname } = req.body;
+		const { banner, category } = req.body;
         let bannerimage;
                 
             req.files.forEach((file) => {
-                if (file.fieldname == 'image') {
+                if (file.fieldname == 'imageFile') {
                     bannerimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
                 }
             });
 
-		if (!bannername) {
-			return res.status(422).json({ message: 'banner name is required' });
-		}
+		// if (!banner) {
+		// 	return res.status(422).json({ message: 'banner name is required' });
+		// }
 
-		const existingData = await bannerModel.findOne({ name: bannername });
+		// const existingData = await bannerModel.findOne({ name: banner ,deleteAt:null});
 
-		if (existingData) {
-			return res.status(422).json({ message: 'banner already exists' });
-		}
+		// if (existingData) {
+		// 	return res.status(422).json({ message: 'banner already exists' });
+		// }
 
 		await bannerModel.create({
-			name: bannername,
-			category: categoryname,
+			name: banner,
+			category: category,
             image: bannerimage
 		});
-		return res.status(200).json({ message: 'banner created' });
+		return res.status(200).json({ message: 'banner created',success:true });
 	} catch (err) {
 		console.log(err);
 		next(serverError());
@@ -46,15 +47,36 @@ export const getAllBanner = async (req, res, next) => {
 				},
 			},
 			{
+				$lookup: {
+					from: categoryModel.modelName,
+					localField: 'category',
+					foreignField: '_id',
+					as: 'categories',
+					pipeline:[
+						{
+							$project:{
+								_id:0,
+								name:1
+							}
+							}
+					]
+					},
+			},
+			{
+				$unwind:{
+					path:'$categories',
+				},
+			},
+			{
 				$project: {
-					name: 1,
+					// name: 1,
 					_id: 1,
-					category: 1,
                     image: 1,
+					category: '$categories.name',
 				},
 			},
 		]);
-
+console.log(banners);
 		if (!banners) {
 			return res.status(422).json({ message: 'No banners found' });
 		}
@@ -83,6 +105,7 @@ export const getBannerById = async (req, res, next) => {
 					$project: {
 						name: 1,
 						_id: 1,
+						image:1,
 						category: 1,
 					},
 				},
@@ -102,11 +125,11 @@ export const updateBanner = async (req, res, next) => {
 	try {
 		const bannerId = req.params.id;
 
-		const { bannername } = req.body;
-        let bannerimage = req.body.image;
+		const { banner } = req.body;
+        let bannerimage = req.body.imageFile;
                         if (req.files) {
                             req.files.forEach((file) => {
-                                if (file.fieldname == 'image') {
+                                if (file.fieldname == 'imageFile') {
                                     bannerimage =  'uploads' + file.path.split(path.sep + 'uploads').at(1);
                                 }
                             });
@@ -114,28 +137,29 @@ export const updateBanner = async (req, res, next) => {
                             }
         
 
-		if (!bannername) {
+		if (!banner) {
 			return res.status(422).json({ message: 'banner name is required' });
 		}
 
-		const existingData = await bannerModel.findOne({ name: bannername, _id: { $ne: bannerId } });
+		const existingData = await bannerModel.findOne({ name: banner, _id: { $ne: bannerId } });
 
 		if (existingData) {
 			return res.status(422).json({ message: 'banner name already exist' });
 		}
 
-		const banner = await bannerModel.findOne({
+		const banners = await bannerModel.findOne({
 			_id: bannerId,
 			deleteAt: null,
 		});
 
-		banner.name = bannername;
-        banner.image = bannerimage;
+		banners.name = banner;
+        banners.image = bannerimage;
 
-		await banner.save();
+		await banners.save();
 
 		return res.status(200).json({
 			message: 'Updated Successfully',
+			success:true
 		});
 	} catch (err) {
 		console.log(err);
@@ -159,6 +183,7 @@ export const deleteBanner = async (req, res, next) => {
 
 		return res.status(200).json({
 			message: 'Deleted Successfully',
+			success:true
 		});
 	} catch (err) {
 		console.log(err);

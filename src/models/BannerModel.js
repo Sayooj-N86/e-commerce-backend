@@ -4,12 +4,17 @@ const bannerSchema = new mongoose.Schema(
     {
         name: {
             type:String,
-            required:true,
+            required:false,
         },
         image: {
             type: String,
             required:false,
         },
+        category: {
+            type: mongoose.Types.ObjectId,
+            required:false,
+        },
+        
         deleteAt: {
             type: String,
             required: false,
