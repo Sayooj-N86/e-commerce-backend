@@ -125,7 +125,7 @@ export const updateBanner = async (req, res, next) => {
 	try {
 		const bannerId = req.params.id;
 
-		const { banner } = req.body;
+		const { category } = req.body;
         let bannerimage = req.body.imageFile;
                         if (req.files) {
                             req.files.forEach((file) => {
@@ -137,22 +137,22 @@ export const updateBanner = async (req, res, next) => {
                             }
         
 
-		if (!banner) {
-			return res.status(422).json({ message: 'banner name is required' });
-		}
+		// if (!banner) {
+		// 	return res.status(422).json({ message: 'banner name is required' });
+		// }
 
-		const existingData = await bannerModel.findOne({ name: banner, _id: { $ne: bannerId } });
+		// const existingData = await bannerModel.findOne({ name: banner, _id: { $ne: bannerId } });
 
-		if (existingData) {
-			return res.status(422).json({ message: 'banner name already exist' });
-		}
+		// if (existingData) {
+		// 	return res.status(422).json({ message: 'banner name already exist' });
+		// }
 
 		const banners = await bannerModel.findOne({
 			_id: bannerId,
 			deleteAt: null,
 		});
 
-		banners.name = banner;
+		banners.category = category;
         banners.image = bannerimage;
 
 		await banners.save();
