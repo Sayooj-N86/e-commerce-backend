@@ -14,6 +14,14 @@ const productSchema = new mongoose.Schema(
             type:String,
             required:false,
             },
+        category: {
+                type: mongoose.Types.ObjectId,
+                required:false,
+            },
+        brand: {
+                type: mongoose.Types.ObjectId,
+                required:false,
+            },
         image: {
             type: String,
             required:false,
