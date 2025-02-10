@@ -5,6 +5,21 @@ import { categoryModel } from '../../models/CategoryModel.js';
 import { productModel } from '../../models/ProductModel.js';
 import { serverError } from '../../utils/ErrorHandler.js';
 
+export const featuredProduct = async (req,res,next) => {
+    try {
+        const productId = req.params.id;
+        const product = await productModel.findById(productId);
+        if(!product) {
+            return res.status(422).json({message: 'Product not found'});
+        }
+        product.featured= product.featured === true?false:true;
+        await product.save();
+        return res.status(200).json({message:product.featured?'feature updated':'product not featured',success:true});
+    }
+    catch(err) {
+      next(serverError(err));
+    }
+};
 
 
 export const createProduct = async(req,res,next) => {
@@ -105,7 +120,8 @@ export const getAllProduct = async (req,res,next) => {
                     description: 1,
                     image: 1,
                     brand: '$brands.name',
-                    category:'$categories.name'
+                    category:'$categories.name',
+                    featured:1
                 }
             }
         ]);
