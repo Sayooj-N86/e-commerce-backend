@@ -8,7 +8,10 @@ import {
 } from '../../../controllers/dashboard/BannerController.js';
 import { uploadFile } from '../../../utils/fileUploader.js';
 
+
+
 const bannerRouter = express.Router();
+
 
 bannerRouter.post('/create', uploadFile('banner').any(), createBanner);
 bannerRouter.get('/get-all', getAllBanner);

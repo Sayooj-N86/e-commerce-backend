@@ -4,7 +4,7 @@ import dashboardPublicRouter from './DashBoardPublicRoutes.js';
 
 const dashboardRoutes = express.Router();
 
-dashboardRoutes.use(dashboardPrivateRouter);
 dashboardRoutes.use(dashboardPublicRouter);
+dashboardRoutes.use(dashboardPrivateRouter);
 
 export default dashboardRoutes;

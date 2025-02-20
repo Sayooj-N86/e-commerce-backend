@@ -12,7 +12,6 @@ export const homepageData = async (req, res, next) => {
                     deleteAt: null,
                 },
             },
-            
             {
                 $project: {
                     // name: 1,
@@ -58,7 +57,6 @@ export const homepageData = async (req, res, next) => {
                         }
                     }
                 ]);
-console.log(banners);
        
 
         return res.status(200).json({

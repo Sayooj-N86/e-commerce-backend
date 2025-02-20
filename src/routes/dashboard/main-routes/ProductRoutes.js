@@ -11,6 +11,7 @@ import { uploadFile } from '../../../utils/fileUploader.js';
 
 const productRouter = express.Router();
 
+
 productRouter.post('/create', uploadFile('product').any(), createProduct);
 productRouter.get('/get-all', getAllProduct);
 productRouter.get('/get-one/:id', getProductById);

@@ -8,6 +8,7 @@ import { brandModel } from '../../models/BrandModel.js';
 export const getAllProducts = async (req,res,next) => {
     try{
         const categoryId = req.params.id;
+        console.log(categoryId);
         const product = await productModel.aggregate([
             {
                 $match: {
@@ -51,6 +52,7 @@ console.log(product);
 export const getOneProductById = async(req,res,next) => {
     try{
         const productId = req.params.id;
+        console.log(productId);
         const product = (await productModel.aggregate([
             {
                 $match: {
@@ -105,7 +107,7 @@ export const getOneProductById = async(req,res,next) => {
                 {
                     $project: {
                     name: 1,
-                    _id: 1,
+               
                     price: 1,
                     description: 1,
                     image: 1,
@@ -115,6 +117,7 @@ export const getOneProductById = async(req,res,next) => {
                     }
                 }
         ])).at(0);
+        console.log(product);
         return res.status(200).json({ 
             message: 'fetched product',
             data: product,
