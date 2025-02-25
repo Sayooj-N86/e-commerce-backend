@@ -20,5 +20,8 @@ const env = cleanEnv(process.env,{
         default:'eyJhbGciOiJIUaaaaaaaazI1NiJ9.eyJSb2xlyhuiQuiuyi4iLCJlbWFpbCI6ImFkbWluQGVtYy5jb20ifQ.xCyQt3wQXRj8NojG-m26LS9GktX90VBxU15BoxLuTS8'
 
     }),
+    STRIPE_SECRET_KEY:str({
+        default:'sk_test_51QwHUJBLTTX7o2lgsUg8buQEAWvmYSpcv4IQYLc6jZE3RS84SZzBWFlaiPaeacfnlmgt59zHq7NhhRioEeRvJRAC006Xa2WPvv'
+    }),
 });
 export default env;

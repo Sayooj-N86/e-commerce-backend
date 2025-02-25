@@ -10,7 +10,7 @@ const frontendPublicRouter = express.Router();
 frontendPublicRouter.use('/home',homeRouter);
 frontendPublicRouter.use('/categories',categoriesRouter);
 frontendPublicRouter.use('/products',productsRouter);
-frontendPublicRouter.use('/auth',userRouter);
+frontendPublicRouter.use('/auth',userRouter);   
 
 
 export default frontendPublicRouter;
