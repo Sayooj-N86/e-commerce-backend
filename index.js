@@ -5,8 +5,12 @@ import { cwd } from 'process';
 import ConnectDB from './src/config/db.js';
 import dashboardRoutes from './src/routes/dashboard/DashboardRoutes.js';
 import frontendRoutes from './src/routes/frontend/FrontendRoutes.js';
+import { webhookRouter } from './src/routes/frontend/main-routes/webhookRoutes.js';
 
 const app = express();
+
+app.use('/webhook',express.raw({type:'application/json'}),webhookRouter);
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(cwd() + '/uploads', { maxAge: 31557600 }));
@@ -15,6 +19,7 @@ app.use('/dashboard/api', dashboardRoutes);
 app.use('/frontend/api',frontendRoutes);
 
 const port = env.PORT;
+
 
 // app.get('/:num1/:num2', (req, res) => {
 // 	const { num1, num2 } = req.params;

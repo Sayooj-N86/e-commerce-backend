@@ -36,7 +36,7 @@ export const homepageData = async (req, res, next) => {
                 }
             }
         ]);
-         const featuredProduct = await productModel.aggregate([
+        const featuredProduct = await productModel.aggregate([
                     {
                         $match: {
                             deleteAt: null,

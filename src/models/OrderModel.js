@@ -66,7 +66,20 @@ const OrderSchema = new mongoose.Schema(
 				required: true,
 			},
 		},
-
+		payment:{
+			payment_order_Id:{
+				type:String,
+				required:false,
+			},
+			paymentStatus:{
+				type:String,
+				default:'created',
+			},
+			updatedon:{
+				type:Date,
+				required:false,
+			},
+		},
 		deleteAt: {
 			type: Date,
 			required: false,

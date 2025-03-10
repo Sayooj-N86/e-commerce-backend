@@ -23,5 +23,8 @@ const env = cleanEnv(process.env,{
     STRIPE_SECRET_KEY:str({
         default:'sk_test_51QwHUJBLTTX7o2lgsUg8buQEAWvmYSpcv4IQYLc6jZE3RS84SZzBWFlaiPaeacfnlmgt59zHq7NhhRioEeRvJRAC006Xa2WPvv'
     }),
+    ENDPOINT_SECRET:str({
+        default:'whsec_quMXT6SaxId39tQYHfdBhohKrDtodLRl'
+    }),
 });
 export default env;
